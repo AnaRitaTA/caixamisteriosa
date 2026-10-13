@@ -1,0 +1,523 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Caixas Misteriosas</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#F2F6F3; --surface:#FFFFFF; --ink:#12241D; --muted:#4F6A5F; --line:#D3DED7;
+  --accent:#1C7C54; --accent-ink:#FFFFFF; --o2:#1F6FB5; --co2:#B8571A; --base:#7B8B84;
+  --warn:#B3261E; --soft:#E6EFE9; --focus:#0B57D0; --night:#E3EAE6;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'Source Sans 3','Segoe UI',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1915; --surface:#15241E; --ink:#E4EFE9; --muted:#9DB5AA; --line:#263A32;
+    --accent:#4DC48A; --accent-ink:#0A1A13; --o2:#6DB2F2; --co2:#F09A5C; --base:#8AA096;
+    --warn:#FF8A80; --soft:#1B2E26; --focus:#8AB4F8; --night:#1A2B24; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1915; --surface:#15241E; --ink:#E4EFE9; --muted:#9DB5AA; --line:#263A32;
+  --accent:#4DC48A; --accent-ink:#0A1A13; --o2:#6DB2F2; --co2:#F09A5C; --base:#8AA096;
+  --warn:#FF8A80; --soft:#1B2E26; --focus:#8AB4F8; --night:#1A2B24; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 40px}
+.wrap{max-width:1180px;margin-inline:auto}
+h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.7rem,4vw,2.4rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.1rem;font-weight:700}
+p{margin:0}
+.top{padding-bottom:14px}
+.top .sub{color:var(--muted);margin-top:6px;max-width:68ch}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:18px;overflow-x:auto}
+.tab{font:600 .98rem var(--body);color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:10px 14px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sim{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.sim{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
+.sh{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+.sh .n{font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:500}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{white-space:nowrap;background:var(--bg);border:0;border-left:1px solid var(--line);padding:8px 12px;font:600 .9rem var(--body);cursor:pointer}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.row2{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:10px}
+.lbl{font-weight:600;font-size:.92rem}
+.slider{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.slider .name{font-weight:600;font-size:.93rem}
+.slider output{font-family:var(--mono);font-size:.95rem;font-variant-numeric:tabular-nums}
+.slider input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--accent)}
+.slider.off{opacity:.45}
+.btn{font:700 .95rem var(--body);padding:9px 16px;border-radius:4px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn.sec{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.note{font-size:.85rem;color:var(--muted);margin-top:8px}
+.box{display:flex;gap:14px;align-items:center}
+.box svg{flex:none;width:120px;height:auto}
+.comp{display:grid;grid-template-columns:1fr 120px;gap:8px;margin-bottom:8px;align-items:center}
+select,textarea{width:100%;border:1px solid var(--line);border-radius:4px;background:var(--bg);padding:7px 9px}
+textarea{resize:vertical;min-height:64px}
+.charts{display:grid;gap:14px}
+.ch h3{font-size:.95rem;margin-bottom:2px}
+.ch svg{width:100%;height:auto;display:block;background:var(--surface)}
+.axis text{font:11px var(--mono);fill:var(--muted)}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.ro{border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--bg)}
+.ro small{display:block;color:var(--muted);font-size:.78rem}
+.ro b{font-family:var(--mono);font-size:1.05rem;font-variant-numeric:tabular-nums;font-weight:500}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
+th{font-size:.78rem;color:var(--muted);font-weight:600}
+.sw{display:inline-block;width:26px;height:0;border-top:3px solid var(--ink);vertical-align:middle;margin-right:6px}
+.hints{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.hints li{border-left:3px solid var(--accent);background:var(--soft);padding:8px 10px;border-radius:0 4px 4px 0;font-size:.93rem}
+.hints li b{font-family:var(--mono);font-size:.75rem;color:var(--accent);display:block}
+.res{margin-top:10px;padding:10px 12px;border-radius:4px;border:1px solid var(--line);background:var(--bg);font-size:.93rem}
+.res.ok{border-color:var(--accent)}
+.res.no{border-color:var(--warn)}
+.radio{display:block;margin:4px 0;font-size:.93rem}
+.radio input{margin-right:6px;accent-color:var(--accent)}
+.hide{display:none!important}
+.sr{position:absolute;left:-9999px}
+.tbl input[type=text]{width:100%;min-width:110px;border:1px solid var(--line);border-radius:4px;background:var(--bg);padding:4px 6px}
+.full{max-width:860px}
+.q{border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin-bottom:12px;background:var(--surface)}
+.q p{font-weight:600;margin-bottom:6px}
+.q.ok{border-color:var(--accent)} .q.no{border-color:var(--warn)}
+.mark{font-family:var(--mono);font-size:.85rem;margin-top:6px}
+.code{font-family:var(--mono);font-size:.85rem;word-break:break-all;min-height:90px}
+.chk label{display:block;margin:6px 0}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.sum{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--bg);font-size:.92rem}
+.sum b{display:block;font-family:var(--display)}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Caixas Misteriosas</h1>
+    <p class="sub">Há quatro caixas fechadas e opacas. Dentro de cada uma pode haver seres vivos, ou não. Só podes ver o que acontece ao CO₂ e ao O₂ no ar. Controla a luz, faz ensaios e descobre o que está lá dentro. Se tiveres dúvidas, pede uma pista.</p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Separadores">
+    <button class="tab" role="tab" id="tab-mis" aria-selected="true">Caixas misteriosas</button>
+    <button class="tab" role="tab" id="tab-reg" aria-selected="false">Registo</button>
+    <button class="tab" role="tab" id="tab-quiz" aria-selected="false">Quiz</button>
+    <button class="tab" role="tab" id="tab-res" aria-selected="false">Resultados</button>
+  </div>
+
+  <div class="sim" id="v-sim">
+    <div class="stack">
+      <section class="panel" id="p-box">
+        <div class="sh"><span class="n">1</span><h2 id="h-box">Escolhe a caixa</h2></div>
+        <div id="mis-sel">
+          <div class="row2"><span class="lbl">Caixa</span>
+            <div class="seg" id="bx" role="group" aria-label="Caixa"></div></div>
+          <div class="box">
+            <svg viewBox="0 0 120 100" aria-hidden="true">
+              <rect x="14" y="30" width="92" height="62" rx="4" fill="var(--ink)" opacity=".88"/>
+              <rect x="14" y="30" width="92" height="12" rx="4" fill="var(--ink)"/>
+              <text x="60" y="76" text-anchor="middle" font-size="34" fill="var(--surface)" font-family="var(--display)">?</text>
+              <g id="lamp"><circle cx="60" cy="12" r="9" fill="#F2C94C" stroke="var(--ink)" stroke-width="1.5"/>
+              <path d="M60 22 v8" stroke="var(--ink)" stroke-width="2"/></g>
+            </svg>
+            <p class="note" style="margin:0">Caixa selada e opaca. Começa às 06:00 com ar normal (420 ppm de CO₂ e 20,9 % de O₂). Cada ensaio dura 24 horas. Uma das caixas pode estar vazia.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="sh"><span class="n">2</span><h2>Controla as variáveis</h2></div>
+        <div class="row2"><span class="lbl">Luz</span>
+          <div class="seg" id="lmode" role="group" aria-label="Regime de luz">
+            <button data-v="nat" aria-pressed="true">Dia e noite</button>
+            <button data-v="dark" aria-pressed="false">Escuro</button>
+            <button data-v="lit" aria-pressed="false">Luz fixa</button></div></div>
+        <div class="slider" id="s-int"><label class="name" for="int">Intensidade da luz</label><output id="o-int">80 %</output>
+          <input type="range" id="int" min="10" max="100" step="5" value="80"></div>
+        <div class="row2" style="margin-top:8px">
+          <button class="btn" id="run">Fechar e medir</button>
+          <button class="btn sec" id="clear">Limpar ensaios</button>
+        </div>
+        <p class="note">Compara a luz do dia com o escuro. Os ensaios ficam no gráfico para os comparares.</p>
+      </section>
+
+      <section class="panel">
+        <div class="sh"><span class="n">3</span><h2>Pistas</h2></div>
+        <div class="row2"><button class="btn sec" id="hint">Pedir uma pista</button><span class="note" style="margin:0" id="hcount"></span></div>
+        <ol class="hints" id="hints" aria-live="polite"></ol>
+      </section>
+
+      <section class="panel" id="p-hyp">
+        <div class="sh"><span class="n">4</span><h2>A minha hipótese</h2></div>
+        <p class="lbl" style="margin-bottom:4px">Penso que a caixa <span id="hb">A</span> tem…</p>
+        <label class="radio"><input type="radio" name="h" value="só seres que fazem fotossíntese"> só seres que fazem fotossíntese</label>
+        <label class="radio"><input type="radio" name="h" value="só seres que não fazem fotossíntese"> só seres que não fazem fotossíntese</label>
+        <label class="radio"><input type="radio" name="h" value="seres das duas categorias"> as duas coisas</label>
+        <label class="radio"><input type="radio" name="h" value="nada (caixa vazia)"> nada (caixa vazia)</label>
+        <label class="lbl" for="why" style="display:block;margin-top:8px">Porque penso isso (usa os teus ensaios)</label>
+        <textarea id="why"></textarea>
+        <p class="note" id="hsaved">A hipótese fica guardada para cada caixa. Aparece nos Resultados quando o professor der o código.</p>
+      </section>
+    </div>
+
+    <div class="stack">
+      <section class="panel">
+        <div class="charts">
+          <div class="ch"><h3 style="color:var(--co2)">CO₂ no ar da caixa (ppm)</h3><svg id="c1" viewBox="0 0 640 230" role="img" aria-label="Gráfico do CO₂ ao longo do tempo"></svg></div>
+          <div class="ch"><h3 style="color:var(--o2)">O₂ no ar da caixa (%)</h3><svg id="c2" viewBox="0 0 640 230" role="img" aria-label="Gráfico do O₂ ao longo do tempo"></svg></div>
+        </div>
+        <div class="slider" style="margin-top:8px;border-top:0"><label class="name" for="cur">Hora a observar</label><output id="o-cur">06:00</output>
+          <input type="range" id="cur" min="0" max="24" step="0.25" value="0"></div>
+        <div class="readouts" id="ro" aria-live="polite"></div>
+        <p class="note" id="ro-note">Faz um ensaio para ver as leituras. Os valores têm um pouco de ruído, como um sensor real.</p>
+        <div class="row2" style="margin-top:10px"><button class="btn sec" id="addreg">Registar esta leitura</button><span class="note" style="margin:0" id="addmsg"></span></div>
+      </section>
+      <section class="panel">
+        <div class="sh"><h2>Os teus ensaios</h2></div>
+        <div style="overflow-x:auto"><table><thead><tr><th>Ensaio</th><th>Luz</th><th>CO₂ final</th><th>O₂ final</th><th></th></tr></thead><tbody id="rt"></tbody></table></div>
+        <p class="note">Cada linha é um ensaio, e o mais recente é o mais escuro. As zonas cinzentas são a noite.</p>
+      </section>
+    </div>
+  </div>
+
+  <section class="full hide" id="v-reg">
+    <div class="panel" style="margin-bottom:16px">
+      <div class="sh"><h2>Registo de leituras</h2></div>
+      <p class="note" style="margin:0 0 10px">Na aba das caixas, move a hora a observar e carrega em «Registar esta leitura». Depois escreve o que observas. Também podes acrescentar uma linha à mão.</p>
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Caixa</th><th>Hora</th><th>Luz</th><th>CO₂ (ppm)</th><th>O₂ (%)</th><th>Observações</th><th></th></tr></thead><tbody id="regt"></tbody></table></div>
+      <div class="row2" style="margin-top:10px"><button class="btn sec" id="addrow">Acrescentar linha</button></div>
+    </div>
+    <div class="panel" style="margin-bottom:16px">
+      <div class="sh"><h2>Gráfico dos teus registos</h2></div>
+      <div class="charts">
+        <div class="ch"><h3 style="color:var(--co2)">CO₂ (ppm)</h3><svg id="r1" viewBox="0 0 640 220" role="img" aria-label="Pontos registados de CO₂"></svg></div>
+        <div class="ch"><h3 style="color:var(--o2)">O₂ (%)</h3><svg id="r2" viewBox="0 0 640 220" role="img" aria-label="Pontos registados de O₂"></svg></div>
+      </div>
+      <p class="note">● caixa A &nbsp; ■ caixa B &nbsp; ▲ caixa C &nbsp; ◆ caixa D. Só aparecem as leituras com hora, CO₂ e O₂ preenchidos.</p>
+    </div>
+    <div class="panel chk">
+      <div class="sh"><h2>Lista de verificação</h2></div>
+      <label><input type="checkbox" data-ck="0"> Fiz ensaios com luz e no escuro</label>
+      <label><input type="checkbox" data-ck="1"> Registei leituras de cada caixa</label>
+      <label><input type="checkbox" data-ck="2"> Escrevi uma hipótese para cada caixa</label>
+      <label><input type="checkbox" data-ck="3"> A hipótese relaciona respiração e fotossíntese</label>
+      <label><input type="checkbox" data-ck="4"> Fiz o quiz</label>
+    </div>
+  </section>
+
+  <section class="full hide" id="v-quiz">
+    <div class="panel" id="qlock">
+      <div class="sh"><h2>Quiz</h2></div>
+      <p class="note" style="margin:0 0 8px">O quiz só abre quando te derem o código.</p>
+      <div class="row2"><label class="lbl" for="qunl">Código</label><input type="text" id="qunl" autocomplete="off" style="border:1px solid var(--line);border-radius:4px;background:var(--bg);padding:7px 9px;max-width:220px"><button class="btn" id="qunlbtn">Abrir</button><span style="color:var(--warn);font-weight:600" id="qunlmsg" role="alert"></span></div>
+    </div>
+    <div id="qbody" class="hide">
+    <div class="panel">
+      <div class="sh"><h2>Quiz</h2></div>
+      <div id="quiz"></div>
+      <div class="row2"><button class="btn" id="qsend">Corrigir</button><button class="btn sec" id="qreset">Refazer</button><span id="qscore" class="lbl"></span></div>
+      <p class="note">A correção diz-te se cada resposta está certa ou errada, mas não revela a resposta certa. Podes refazer e discutir com o grupo.</p>
+    </div>
+    </div>
+  </section>
+
+  <section class="full hide" id="v-res">
+    <div class="panel" id="lockp">
+      <div class="sh"><h2>Resultados das caixas</h2></div>
+      <p class="note" style="margin:0 0 8px">Os resultados só abrem quando te derem o código. Até lá, continua a investigar.</p>
+      <div class="row2"><label class="lbl" for="unl">Código</label><input type="text" id="unl" autocomplete="off" style="border:1px solid var(--line);border-radius:4px;background:var(--bg);padding:7px 9px;max-width:220px"><button class="btn" id="unlbtn">Abrir</button><span style="margin:0;color:var(--warn);font-weight:600" id="unlmsg" role="alert"></span></div>
+      <div id="reveal" class="hide" style="margin-top:14px"></div>
+    </div>
+    <div class="row2" style="margin-top:16px"><button class="btn sec" id="wipe">Recomeçar do zero</button><span class="note" style="margin:0" id="wipemsg">Apaga ensaios, registos, hipóteses, quiz, pistas e fecha os resultados.</span></div>
+  </section>
+</div>
+
+<script>
+(function(){
+var DT=0.05,T0=6,DUR=24,KEY='caixas-misteriosas-v1';
+var ORG={
+ feijoeiro:{n:'Feijoeiro',R:10,Pm:70,f:1},
+ alga:{n:'Algas',R:12,Pm:160,f:1},
+ grilos:{n:'Grilos',R:28,Pm:0,f:1},
+ cogumelos:{n:'Cogumelos',R:14,Pm:0,f:1},
+ leveduras:{n:'Leveduras',R:24,Pm:0,f:0.15}
+};
+var BOXES=[ [['feijoeiro',1]], [], [['feijoeiro',1.6],['grilos',0.2]], [['grilos',1]] ];
+var BL=['A','B','C','D'];
+var UNLOCK='respiracao',QUNLOCK='fotossintese';
+var REVEAL=[
+ ['Um feijoeiro.','Com luz, o CO₂ desce e o O₂ sobe: a fotossíntese ganha à respiração. No escuro só há respiração, por isso o CO₂ sobe e o O₂ desce.'],
+ ['Nada: a caixa está vazia.','Os gases não mudam. Serve de controlo: mostra que a caixa e o sensor não alteram o ar.'],
+ ['Um feijoeiro e grilos.','Com luz a planta compensa a respiração de todos, mas no escuro o CO₂ sobe mais depressa do que só com a planta. Só com os gráficos é difícil separar «mais plantas» de «planta e animal».'],
+ ['Grilos.','O CO₂ sobe e o O₂ desce sempre, com luz ou no escuro. A luz não muda nada: só há respiração.']
+];
+var HINTS=[
+ 'Os gases só te dizem o que os seres vivos fazem, não o que eles são. Que processos mudam o CO₂ e o O₂ numa caixa fechada?',
+ 'Muda uma só variável de cada vez e compara os ensaios. O que muda se a luz estiver acesa ou apagada?',
+ 'Se o CO₂ desce com luz mas sobe no escuro, que processo só acontece com luz? E o que se passa no escuro?',
+ 'Olha para o O₂ e para o CO₂ juntos: o que acontece a cada um quando o outro sobe? Todos os seres vivos fazem as mesmas coisas?',
+ 'Compara as caixas entre si: o que é igual e o que é diferente? Há alguma caixa que possa servir de comparação para as outras?',
+ 'Se duas caixas dão curvas parecidas, o que podes mudar para as distinguir? Experimenta o escuro, a luz fixa e a intensidade da luz.'
+];
+var QUIZ=[
+ {q:'Que padrão sugere que um organismo está a realizar fotossíntese durante o período de luz?',o:['CO₂ diminui e O₂ aumenta','CO₂ aumenta e O₂ aumenta','CO₂ mantém-se constante e O₂ diminui','CO₂ diminui e O₂ diminui'],a:0},
+ {q:'A fotossíntese aumenta a concentração de CO₂ numa caixa durante o dia.',o:['Verdadeiro','Falso'],a:1},
+ {q:'Se os gráficos mostram CO₂ a aumentar consistentemente e O₂ a diminuir, que tipo de ser vivo é mais provável estar na caixa?',o:['Planta em plena fotossíntese','Animal (organismo heterotrófico)','Organismo fotossintético ativo','Nenhum ser vivo'],a:1},
+ {q:'A análise apenas dos gráficos permite identificar com certeza a espécie do ser vivo dentro da caixa.',o:['Verdadeiro','Falso'],a:1},
+ {q:'Qual a explicação mais plausível para um padrão em que o CO₂ diminui durante o dia e aumenta à noite?',o:['Fotossíntese durante o dia e respiração predominante durante a noite','Respiração durante o dia e fotossíntese durante a noite','Um sensor com falha intermitente','A caixa tem uma fuga de ar'],a:0}
+];
+var st={mode:'mis',box:0,cmp:0,lm:'nat',I:80,T:22,runs:[],hints:0,seed:1, reg:[],hyp:{A:{v:'',w:''},B:{v:'',w:''},C:{v:'',w:''},D:{v:'',w:''}},ck:[0,0,0,0,0],qa:[-1,-1,-1,-1,-1],qdone:false,g:'',unl:false,qunl:false};
+function $(i){return document.getElementById(i)}
+function load(){try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s){['reg','hyp','ck','qa','qdone','g','hints','unl','qunl'].forEach(function(k){if(s[k]!=null)st[k]=s[k]})}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({reg:st.reg,hyp:st.hyp,ck:st.ck,qa:st.qa,qdone:st.qdone,g:st.g,hints:st.hints,unl:st.unl,qunl:st.qunl}))}catch(e){}}
+function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;var t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296-0.5}}
+function light(h,env){
+  if(env.lm==='dark')return 0;
+  var I=env.I/100;
+  if(env.lm==='lit')return 0.8*I;
+  var x=((h%24)+24)%24; return (x>=8&&x<=20)?Math.sin(Math.PI*(x-8)/12)*I:0;
+}
+function spec(comps){
+  var R=0,Pm=0,fw=0;
+  comps.forEach(function(c){var o=ORG[c[0]],q=c[1];R+=o.R*q;Pm+=o.Pm*q;fw+=o.R*q*o.f});
+  return {R:R,Pm:Pm,frac:R>0?fw/R:1};
+}
+function simulate(sp,env,seed){
+  var fR=Math.pow(2,(env.T-22)/10), fP=Math.pow(1.5,(env.T-22)/10)*(env.T>32?Math.max(0,1-(env.T-32)/8):1);
+  var c=420,o=20.9,r=rng(seed*97+13),N=Math.round(DUR/DT),out={t:[],co2:[],o2:[],tc:[],to:[],L:[]};
+  for(var i=0;i<=N;i++){
+    var h=T0+i*DT, L=light(h,env);
+    out.t.push(i*DT);out.tc.push(c);out.to.push(o);out.L.push(L);
+    out.co2.push(c+r()*14);out.o2.push(o+r()*0.008);
+    var P=sp.Pm*fP*L*c/(c+250), net=sp.R*fR-P;
+    c=Math.max(40,c+DT*net);
+    o=o-DT*sp.frac*net/10000;
+  }
+  return out;
+}
+function clock(h){var x=Math.round((h+T0)*4)/4; x=((x%24)+24)%24; var hh=Math.floor(x),mm=Math.round((x-hh)*60);return (hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm}
+function seg(id,items,cur,cb){
+  var el=$(id);el.innerHTML='';
+  items.forEach(function(it,i){var b=document.createElement('button');b.textContent=it;b.setAttribute('aria-pressed',i===cur?'true':'false');b.onclick=function(){cb(i)};el.appendChild(b)});
+}
+function envNow(){return {lm:st.lm,I:st.I,T:st.T}}
+function envLabel(e){return (e.lm==='nat'?'dia/noite '+e.I+' %':e.lm==='dark'?'escuro':'luz fixa '+e.I+' %')}
+function run(){
+  var e=envNow(), sp=spec(BOXES[st.box]);
+  st.seed++;
+  var d=simulate(sp,e,st.seed);
+  var same=st.runs.filter(function(r){return r.box===st.box});
+  if(same.length>=4)st.runs.splice(st.runs.indexOf(same[0]),1);
+  st.runs.push({box:st.box,name:'Caixa '+BL[st.box],env:e,d:d,id:st.seed});
+  renderAll();
+}
+function curBox(){return st.box}
+function visibleRuns(){var b=curBox();return st.runs.filter(function(r){return r.box===b})}
+function chart(svgId,key,runs,base,dec,colorVar){
+  var W=640,H=230,L=52,Rm=24,Tm=10,Bm=30,svg=$(svgId),dur=DUR;
+  var mn=Infinity,mx=-Infinity;
+  runs.forEach(function(r){r.d[key].forEach(function(v){if(v<mn)mn=v;if(v>mx)mx=v})});
+  if(!isFinite(mn)){mn=base;mx=base}
+  mn=Math.min(mn,base);mx=Math.max(mx,base);
+  var span=mx-mn, minspan=key==='co2'?200:0.3; if(span<minspan){var mid=(mx+mn)/2;mn=mid-minspan/2;mx=mid+minspan/2;span=minspan}
+  mn-=span*0.08;mx+=span*0.08;
+  function X(t){return L+(W-L-Rm)*t/dur}
+  function Y(v){return Tm+(H-Tm-Bm)*(1-(v-mn)/(mx-mn))}
+  var s='<rect x="'+X(14)+'" y="'+Tm+'" width="'+(X(24)-X(14))+'" height="'+(H-Tm-Bm)+'" fill="var(--night)"/><g class="axis">';
+  for(var i=0;i<=4;i++){var v=mn+(mx-mn)*i/4;s+='<line x1="'+L+'" x2="'+(W-Rm)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+v.toFixed(dec)+'</text>'}
+  for(var t=0;t<=dur;t+=6){s+='<text x="'+X(t)+'" y="'+(H-10)+'" text-anchor="middle">'+clock(t)+'</text>'}
+  s+='</g><line x1="'+L+'" x2="'+(W-Rm)+'" y1="'+Y(base)+'" y2="'+Y(base)+'" stroke="var(--base)" stroke-dasharray="2 4"/>';
+  runs.forEach(function(r,idx){
+    var last=idx===runs.length-1, pts='', step=Math.round(0.25/DT);
+    for(var i=0;i<r.d.t.length;i+=step){pts+=(pts?' L':'M')+X(r.d.t[i]).toFixed(1)+' '+Y(r.d[key][i]).toFixed(1)}
+    s+='<path d="'+pts+'" fill="none" stroke="var('+colorVar+')" stroke-width="'+(last?2.4:1.5)+'" opacity="'+(last?1:0.45)+'"/>';
+  });
+  var cx=X(+$('cur').value);
+  s+='<line x1="'+cx+'" x2="'+cx+'" y1="'+Tm+'" y2="'+(H-Bm)+'" stroke="var(--ink)"/>';
+  svg.innerHTML=s;
+}
+function lastRun(){var v=visibleRuns();return v.length?v[v.length-1]:null}
+function readAt(r,h){
+  var i=Math.round(h/DT), i2=Math.min(r.d.t.length-1,i+20), i1=Math.max(0,i2-20);
+  return {i:i,rate:(r.d.tc[i2]-r.d.tc[i1])/((i2-i1)*DT)};
+}
+function renderRO(){
+  var r=lastRun(), n=$('ro');
+  $('addreg').disabled=!r;
+  if(!r){n.innerHTML='';$('ro-note').classList.remove('hide');return}
+  $('ro-note').classList.add('hide');
+  var h=+$('cur').value, a=readAt(r,h), i=a.i;
+  var dc=r.d.tc[i]-420, dox=20.9-r.d.to[i];
+  var items=[['Hora',clock(h)],['CO₂',r.d.co2[i].toFixed(0)+' ppm'],['O₂',r.d.o2[i].toFixed(2)+' %'],['Luz',Math.round(r.d.L[i]*100)+' %'],['Variação do CO₂',(a.rate>=0?'+':'')+a.rate.toFixed(1)+' ppm/h'],['O₂ perdido / CO₂ ganho (desde o início)',(dc>20&&dox>0)?(dox*10000/dc).toFixed(2):'—']];
+  n.innerHTML=items.map(function(x){return '<div class="ro"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join('');
+  $('o-cur').textContent=clock(h);
+}
+function renderCharts(){var vr=visibleRuns();chart('c1','co2',vr,420,0,'--co2');chart('c2','o2',vr,20.9,2,'--o2')}
+function renderTable(){
+  var vr=visibleRuns(), tb=$('rt');
+  if(!vr.length){tb.innerHTML='<tr><td colspan="5" style="color:var(--muted)">Ainda não fizeste nenhum ensaio.</td></tr>';return}
+  var h='';
+  vr.forEach(function(r,i){
+    var n=r.d.t.length-1;
+    h+='<tr><td>'+(i+1)+' · '+r.name+'</td><td>'+envLabel(r.env)+'</td><td>'+r.d.co2[n].toFixed(0)+' ppm</td><td>'+r.d.o2[n].toFixed(2)+' %</td><td><button class="btn sec" style="padding:2px 8px" data-rm="'+r.id+'" aria-label="Apagar ensaio '+(i+1)+'">×</button></td></tr>';
+  });
+  tb.innerHTML=h;
+  Array.prototype.forEach.call(tb.querySelectorAll('[data-rm]'),function(b){b.onclick=function(){var id=+b.getAttribute('data-rm');st.runs=st.runs.filter(function(r){return r.id!==id});renderAll()}});
+}
+function renderHints(){
+  $('hcount').textContent=st.hints+' de '+HINTS.length+' usadas';
+  $('hint').disabled=st.hints>=HINTS.length;
+  var h='';
+  for(var i=st.hints-1;i>=0;i--){
+    var last=(i===st.hints-1);
+    h+='<li><details'+(last?' open':'')+'><summary style="cursor:pointer;font-family:var(--mono);font-size:.78rem;color:var(--accent)">PISTA '+(i+1)+'</summary><div style="margin-top:4px">'+HINTS[i]+'</div></details></li>';
+  }
+  $('hints').innerHTML=h;
+}
+function renderControls(){
+  $('lamp').style.opacity=st.lm==='dark'?0.15:1;
+  $('s-int').classList.toggle('off',st.lm==='dark');
+  $('int').disabled=st.lm==='dark';
+  $('o-int').textContent=st.I+' %';
+  Array.prototype.forEach.call($('lmode').children,function(b){b.setAttribute('aria-pressed',b.getAttribute('data-v')===st.lm?'true':'false')});
+}
+function renderHyp(){
+  var k=BL[st.box], h=st.hyp[k];
+  $('hb').textContent=k;
+  Array.prototype.forEach.call(document.getElementsByName('h'),function(r){r.checked=(r.value===h.v)});
+  $('why').value=h.w;
+}
+/* registo */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function renderReg(){
+  var h='';
+  if(!st.reg.length)h='<tr><td colspan="7" style="color:var(--muted)">Exemplo: Caixa A · 14:00 · 420 ppm · 21,5 % · «CO₂ a diminuir, luz presente» (dados fictícios). Ainda não registaste nada.</td></tr>';
+  st.reg.forEach(function(r,i){
+    h+='<tr><td><select data-f="b" data-i="'+i+'" aria-label="Caixa">'+BL.map(function(b){return '<option'+(r.b===b?' selected':'')+'>'+b+'</option>'}).join('')+'</select></td>'+
+    '<td><input type="text" data-f="h" data-i="'+i+'" value="'+esc(r.h)+'" style="min-width:64px;width:70px" aria-label="Hora"></td>'+
+    '<td>'+esc(r.c||'')+'</td>'+
+    '<td><input type="text" data-f="co2" data-i="'+i+'" value="'+esc(r.co2)+'" style="min-width:70px;width:80px" aria-label="CO2"></td>'+
+    '<td><input type="text" data-f="o2" data-i="'+i+'" value="'+esc(r.o2)+'" style="min-width:64px;width:70px" aria-label="O2"></td>'+
+    '<td><input type="text" data-f="obs" data-i="'+i+'" value="'+esc(r.obs)+'" aria-label="Observações"></td>'+
+    '<td><button class="btn sec" style="padding:2px 8px" data-del="'+i+'" aria-label="Apagar linha">×</button></td></tr>';
+  });
+  $('regt').innerHTML=h;
+  Array.prototype.forEach.call($('regt').querySelectorAll('[data-f]'),function(el){
+    var ev=el.tagName==='SELECT'?'onchange':'oninput';
+    el[ev]=function(){st.reg[+el.getAttribute('data-i')][el.getAttribute('data-f')]=el.value;save();renderRegCharts()};
+  });
+  Array.prototype.forEach.call($('regt').querySelectorAll('[data-del]'),function(b){b.onclick=function(){st.reg.splice(+b.getAttribute('data-del'),1);save();renderReg()}});
+  renderRegCharts();
+}
+function num(s){var x=parseFloat(String(s).replace(',','.'));return isNaN(x)?null:x}
+function hnum(s){var m=/^(\d{1,2})[:h](\d{2})?$/.exec(String(s).trim());if(!m)return null;var x=+m[1]+(m[2]?+m[2]/60:0);x=x-6;if(x<0)x+=24;return x}
+function scatter(id,key,base,dec,col){
+  var W=640,H=220,L=52,Rm=24,Tm=10,Bm=30,pts=[];
+  st.reg.forEach(function(r){var t=hnum(r.h),v=num(r[key]);if(t!=null&&v!=null)pts.push({t:t,v:v,b:r.b})});
+  var mn=base,mx=base;pts.forEach(function(p){mn=Math.min(mn,p.v);mx=Math.max(mx,p.v)});
+  var span=mx-mn,ms=key==='co2'?200:0.3;if(span<ms){var m=(mx+mn)/2;mn=m-ms/2;mx=m+ms/2;span=ms}
+  mn-=span*0.1;mx+=span*0.1;
+  function X(t){return L+(W-L-Rm)*t/24} function Y(v){return Tm+(H-Tm-Bm)*(1-(v-mn)/(mx-mn))}
+  var s='<rect x="'+X(14)+'" y="'+Tm+'" width="'+(X(24)-X(14))+'" height="'+(H-Tm-Bm)+'" fill="var(--night)"/><g class="axis">';
+  for(var i=0;i<=4;i++){var v=mn+(mx-mn)*i/4;s+='<line x1="'+L+'" x2="'+(W-Rm)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+v.toFixed(dec)+'</text>'}
+  for(var t=0;t<=24;t+=6)s+='<text x="'+X(t)+'" y="'+(H-10)+'" text-anchor="middle">'+clock(t)+'</text>';
+  s+='</g><line x1="'+L+'" x2="'+(W-Rm)+'" y1="'+Y(base)+'" y2="'+Y(base)+'" stroke="var(--base)" stroke-dasharray="2 4"/>';
+  pts.forEach(function(p){var x=X(p.t),y=Y(p.v),c='var('+col+')';
+    s+= p.b==='A'?'<circle cx="'+x+'" cy="'+y+'" r="4.5" fill="'+c+'"/>': p.b==='B'?'<rect x="'+(x-4)+'" y="'+(y-4)+'" width="8" height="8" fill="'+c+'"/>':p.b==='C'?'<path d="M'+x+' '+(y-5)+' L'+(x+5)+' '+(y+4)+' L'+(x-5)+' '+(y+4)+' Z" fill="'+c+'"/>':'<path d="M'+x+' '+(y-6)+' L'+(x+6)+' '+y+' L'+x+' '+(y+6)+' L'+(x-6)+' '+y+' Z" fill="'+c+'"/>'});
+  $(id).innerHTML=s;
+}
+function renderRegCharts(){scatter('r1','co2',420,0,'--co2');scatter('r2','o2',20.9,2,'--o2')}
+/* quiz */
+function renderQuiz(){
+  $('qlock').classList.toggle('hide',!!st.qunl);$('qbody').classList.toggle('hide',!st.qunl);
+  if(!st.qunl)return;
+  var h='';
+  QUIZ.forEach(function(q,i){
+    var cls='q',mark='';
+    if(st.qdone){var ok=st.qa[i]===q.a;cls+=ok?' ok':' no';mark='<div class="mark">'+(st.qa[i]<0?'Sem resposta':ok?'✓ Certa':'✗ Errada')+'</div>'}
+    h+='<div class="'+cls+'"><p>'+(i+1)+'. '+q.q+'</p>';
+    q.o.forEach(function(o,j){h+='<label class="radio"><input type="radio" name="q'+i+'" value="'+j+'"'+(st.qa[i]===j?' checked':'')+(st.qdone?' disabled':'')+'> '+String.fromCharCode(65+j)+') '+o+'</label>'});
+    h+=mark+'</div>';
+  });
+  $('quiz').innerHTML=h;
+  Array.prototype.forEach.call($('quiz').querySelectorAll('input'),function(el){el.onchange=function(){var i=+el.name.slice(1);st.qa[i]=+el.value;save()}});
+  var sc=quizScore();$('qscore').textContent=st.qdone?sc+' de '+QUIZ.length+' certas':'';
+  $('qsend').disabled=st.qdone;
+}
+function quizScore(){var n=0;QUIZ.forEach(function(q,i){if(st.qa[i]===q.a)n++});return n}
+/* resultados */
+function norm(x){return String(x).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
+function renderReveal(){
+  var el=$('reveal');
+  if(!st.unl){el.classList.add('hide');el.innerHTML='';return}
+  el.classList.remove('hide');
+  el.innerHTML='<div class="sum" style="margin-bottom:10px"><b>Pistas pedidas</b>'+st.hints+' de '+HINTS.length+(st.hints===0?' (resolveste sem ajuda)':'')+'</div>'+REVEAL.map(function(r,i){
+    var h=st.hyp[BL[i]];
+    return '<div class="sum" style="margin-bottom:10px"><b>Caixa '+BL[i]+'</b>'+
+    '<p style="margin-top:6px"><span class="lbl">A tua previsão:</span> '+(h.v?esc(h.v):'não escreveste nenhuma')+(h.w?'<br><span style="color:var(--muted)">'+esc(h.w)+'</span>':'')+'</p>'+
+    '<p style="margin-top:6px"><span class="lbl">O que existia na caixa:</span> '+r[0]+'</p>'+
+    '<p style="margin-top:6px;color:var(--muted)">'+r[1]+'</p></div>';
+  }).join('')+'<p class="note">Compara cada previsão com o que existia. Que ensaio te teria ajudado mais?</p>';
+}
+function renderRes(){renderReveal()}
+/* ui */
+var VIEWS={mis:'v-sim',reg:'v-reg',quiz:'v-quiz',res:'v-res'};
+function renderAll(){
+  ['mis','reg','quiz','res'].forEach(function(k){$('tab-'+k).setAttribute('aria-selected',st.mode===k)});
+  ['v-sim','v-reg','v-quiz','v-res'].forEach(function(v){$(v).classList.toggle('hide',VIEWS[st.mode]!==v)});
+  seg('bx',BL,st.box,function(i){st.box=i;renderAll()});
+  renderControls();renderHints();renderCharts();renderRO();renderTable();renderHyp();
+  if(st.mode==='reg')renderReg();
+  if(st.mode==='quiz')renderQuiz();
+  if(st.mode==='res')renderRes();
+}
+function go(m){st.mode=m;renderAll();window.scrollTo(0,0)}
+['mis','reg','quiz','res'].forEach(function(k){$('tab-'+k).onclick=function(){go(k)}});
+Array.prototype.forEach.call($('lmode').children,function(b){b.onclick=function(){st.lm=b.getAttribute('data-v');renderAll()}});
+$('int').oninput=function(){st.I=+this.value;renderControls()};
+$('cur').oninput=function(){renderCharts();renderRO()};
+$('run').onclick=run;
+$('clear').onclick=function(){var b=curBox();st.runs=st.runs.filter(function(r){return r.box!==b});renderAll()};
+$('hint').onclick=function(){if(st.hints<HINTS.length){st.hints++;save();renderHints()}};
+Array.prototype.forEach.call(document.getElementsByName('h'),function(r){r.onchange=function(){st.hyp[BL[st.box]].v=r.value;save()}});
+$('why').oninput=function(){st.hyp[BL[st.box]].w=this.value;save()};
+$('addreg').onclick=function(){
+  var r=lastRun();if(!r)return;
+  var h=+$('cur').value,i=Math.round(h/DT);
+  st.reg.push({b:BL[r.box],h:clock(h),c:envLabel(r.env),co2:String(Math.round(r.d.co2[i])),o2:r.d.o2[i].toFixed(2).replace('.',','),obs:''});
+  save();$('addmsg').textContent='Registada na caixa '+BL[r.box]+' às '+clock(h)+'.';
+};
+$('addrow').onclick=function(){st.reg.push({b:'A',h:'',c:'',co2:'',o2:'',obs:''});save();renderReg()};
+Array.prototype.forEach.call(document.querySelectorAll('[data-ck]'),function(c){c.checked=!!st.ck[+c.getAttribute('data-ck')];c.onchange=function(){st.ck[+c.getAttribute('data-ck')]=c.checked?1:0;save()}});
+$('qsend').onclick=function(){st.qdone=true;save();renderQuiz()};
+$('qreset').onclick=function(){st.qdone=false;st.qa=[-1,-1,-1,-1,-1];save();renderQuiz()};
+var wipeArm=false;
+$('wipe').onclick=function(){
+  if(!wipeArm){wipeArm=true;$('wipe').textContent='Tens a certeza? Carrega outra vez';return}
+  wipeArm=false;$('wipe').textContent='Recomeçar do zero';
+  st.reg=[];st.hyp={A:{v:'',w:''},B:{v:'',w:''},C:{v:'',w:''},D:{v:'',w:''}};st.ck=[0,0,0,0,0];st.qa=[-1,-1,-1,-1,-1];st.qdone=false;st.g='';st.hints=0;st.unl=false;st.qunl=false;st.runs=[];
+  try{localStorage.removeItem(KEY)}catch(e){}
+  Array.prototype.forEach.call(document.querySelectorAll('[data-ck]'),function(c){c.checked=false});
+  $('unl').value='';$('unlmsg').textContent='';$('qunl').value='';$('qunlmsg').textContent='';
+  renderAll();
+};
+$('unlbtn').onclick=function(){
+  if(norm($('unl').value)===norm(UNLOCK)){st.unl=true;save();$('unlmsg').textContent='';renderReveal()}
+  else{$('unlmsg').textContent='Código errado. Pede-o ao professor.'}
+};
+$('qunlbtn').onclick=function(){
+  if(norm($('qunl').value)===norm(QUNLOCK)){st.qunl=true;save();$('qunlmsg').textContent='';renderQuiz()}
+  else{$('qunlmsg').textContent='Código errado. Pede-o ao professor.'}
+};
+$('qunl').onkeydown=function(e){if(e.key==='Enter')$('qunlbtn').click()};
+$('unl').onkeydown=function(e){if(e.key==='Enter')$('unlbtn').click()};
+load();renderAll();
+})();
+</script>
+
+</body></html>
